@@ -58,6 +58,7 @@ async fn login_submit(
     let (can_invite, can_reset) = state
         .ldap
         .authenticate(&username, &form.password)
+        .await
         .map_err(|_| AppError::msg("Invalid credentials or insufficient permissions"))?;
 
     let session_id = Uuid::new_v4();
