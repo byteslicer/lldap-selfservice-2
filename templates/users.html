@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Users — LLDAP Self-Service</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <strong>LLDAP Self-Service</strong>
+    <nav>
+      <a href="/admin">Invites</a>
+      <a href="/admin/users">Users</a>
+      <form method="post" action="/admin/logout" class="inline">
+        <button type="submit" class="link">Logout ({{ uid }})</button>
+      </form>
+    </nav>
+  </header>
+  <main class="content">
+    <section class="card">
+      <h1>Users</h1>
+      <form method="get" action="/admin/users" class="row">
+        <label class="grow">Search
+          <input name="q" value="{{ search }}" placeholder="uid, email, or name">
+        </label>
+        <button type="submit">Search</button>
+      </form>
+    </section>
+
+    <section class="card">
+      <table>
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Display name</th>
+            {% if can_reset_pwd %}<th>Reset password</th>{% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in users %}
+          <tr>
+            <td>{{ u.id }}</td>
+            <td>{{ u.email }}</td>
+            <td>{{ u.display_name }}</td>
+            {% if can_reset_pwd %}
+            <td>
+              <details>
+                <summary>Set new password</summary>
+                <form method="post" action="/api/users/{{ u.id }}/reset-password">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                  <label>New password
+                    <input name="password" type="password" required minlength="8">
+                  </label>
+                  <label>Confirm
+                    <input name="password_confirm" type="password" required minlength="8">
+                  </label>
+                  <button type="submit">Reset</button>
+                </form>
+              </details>
+            </td>
+            {% endif %}
+          </tr>
+          {% else %}
+          <tr><td colspan="4" class="muted">No users found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>

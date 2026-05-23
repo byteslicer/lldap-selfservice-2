@@ -1,0 +1,23 @@
+[ldap]
+uri = "ldap://127.0.0.1:3890"
+base_dn = "dc=bambam,dc=fun"
+people_dn = "ou=people,dc=bambam,dc=fun"
+
+[groups]
+invite_admins = "cn=selfservice_admins,ou=groups,dc=bambam,dc=fun"
+password_reset = "cn=selfservice_password_reset,ou=groups,dc=bambam,dc=fun"
+default_on_signup = ["cn=bambam,ou=groups,dc=bambam,dc=fun"]
+
+[lldap]
+http_url = "http://127.0.0.1:17170"
+set_password_bin = "/run/current-system/sw/bin/lldap_set_password"
+service_username = "selfservice"
+
+[server]
+listen = "127.0.0.1:8080"
+public_base_url = "https://selfservice.bambam.fun"
+invite_ttl_days = 7
+cookie_secure = true
+
+[database]
+url = "postgres://lldap_selfservice@localhost/lldap_selfservice"
