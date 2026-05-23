@@ -1,73 +1,85 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Users — LLDAP Self-Service</title>
-  <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
-  <header class="topbar">
-    <strong>LLDAP Self-Service</strong>
-    <nav>
-      <a href="/admin">Invites</a>
-      <a href="/admin/users">Users</a>
-      <form method="post" action="/admin/logout" class="inline">
-        <button type="submit" class="link">Logout ({{ uid }})</button>
-      </form>
-    </nav>
+{% extends "layout_admin.html" %}
+{% block title %}Users — LLDAP Self-Service{% endblock %}
+{% block content %}
+<article>
+  <header class="page-header">
+    <h1>Users</h1>
+    <p class="muted">Search directory users{% if can_reset_pwd %} and reset passwords when permitted{% endif %}.</p>
   </header>
-  <main class="content">
-    <section class="card">
-      <h1>Users</h1>
-      <form method="get" action="/admin/users" class="row">
-        <label class="grow">Search
-          <input name="q" value="{{ search }}" placeholder="uid, email, or name">
-        </label>
-        <button type="submit">Search</button>
-      </form>
-    </section>
 
-    <section class="card">
+  {% include "partials/flash.html" %}
+
+  <section class="page-section">
+    <form method="get" action="/admin/users" class="form-toolbar">
+      <label for="user-search" class="form-toolbar__label">Search</label>
+      <input id="user-search" class="form-toolbar__control" name="q" type="search" value="{{ search }}" placeholder="Username, email, or display name">
+      <button type="submit" class="form-toolbar__submit">Search</button>
+    </form>
+    {% if search.is_empty() %}
+    <p class="hint">Leave empty and search to list users (may be slow on large directories).</p>
+    {% endif %}
+  </section>
+
+  <section class="page-section">
+    <div class="table-scroll">
       <table>
         <thead>
           <tr>
-            <th>Username</th>
-            <th>Email</th>
-            <th>Display name</th>
-            {% if can_reset_pwd %}<th>Reset password</th>{% endif %}
+            <th scope="col">Username</th>
+            <th scope="col">Email</th>
+            <th scope="col">Display name</th>
+            {% if can_reset_pwd %}<th scope="col">Actions</th>{% endif %}
           </tr>
         </thead>
         <tbody>
           {% for u in users %}
           <tr>
-            <td>{{ u.id }}</td>
+            <td><strong>{{ u.id }}</strong></td>
             <td>{{ u.email }}</td>
             <td>{{ u.display_name }}</td>
             {% if can_reset_pwd %}
             <td>
-              <details>
-                <summary>Set new password</summary>
-                <form method="post" action="/api/users/{{ u.id }}/reset-password">
-                  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-                  <label>New password
-                    <input name="password" type="password" required minlength="8">
-                  </label>
-                  <label>Confirm
-                    <input name="password_confirm" type="password" required minlength="8">
-                  </label>
-                  <button type="submit">Reset</button>
-                </form>
-              </details>
+              <button type="button" class="outline secondary" data-reset-user="{{ u.id }}">Reset password</button>
             </td>
             {% endif %}
           </tr>
           {% else %}
-          <tr><td colspan="4" class="muted">No users found.</td></tr>
+          <tr class="empty-row">
+            <td colspan="{% if can_reset_pwd %}4{% else %}3{% endif %}">
+              {% if search.is_empty() %}Enter a search term to find users.{% else %}No users match “{{ search }}”.{% endif %}
+            </td>
+          </tr>
           {% endfor %}
         </tbody>
       </table>
-    </section>
-  </main>
-</body>
-</html>
+    </div>
+  </section>
+</article>
+
+{% if can_reset_pwd %}
+<dialog id="reset-password-dialog">
+  <article>
+    <header>
+      <button type="button" aria-label="Close" class="close" data-close-dialog></button>
+      <h2>Reset password</h2>
+      <p class="muted">Set a new password for <strong id="reset-password-user"></strong>.</p>
+    </header>
+    <form id="reset-password-form" method="post" action="">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <label>
+        New password
+        <input name="password" type="password" required minlength="8" autocomplete="new-password">
+      </label>
+      <label>
+        Confirm password
+        <input name="password_confirm" type="password" required minlength="8" autocomplete="new-password">
+      </label>
+      <footer class="dialog-actions">
+        <button type="button" class="secondary" data-close-dialog>Cancel</button>
+        <button type="submit">Reset password</button>
+      </footer>
+    </form>
+  </article>
+</dialog>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,11 @@
+{% if let Some(f) = flash %}
+<aside class="flash {{ f.kind }}" role="{% if f.kind == "error" %}alert{% else %}status{% endif %}">
+  <p class="flash-text">{{ f.text }}</p>
+  {% if let Some(url) = f.invite_url %}
+  <div class="flash-url-row">
+    <input type="text" readonly value="{{ url }}" class="flash-url-input" id="invite-url-field" aria-label="Invite link">
+    <button type="button" class="outline secondary copy-btn" data-copy-target="invite-url-field">Copy link</button>
+  </div>
+  {% endif %}
+</aside>
+{% endif %}

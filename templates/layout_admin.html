@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>{% block title %}LLDAP Self-Service{% endblock %}</title>
+  <link rel="stylesheet" href="/static/pico.min.css">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="container app-header">
+    <nav aria-label="Admin">
+      <ul>
+        <li><strong>LLDAP Self-Service</strong></li>
+        <li><a href="/admin"{% if nav_active == "invites" %} aria-current="page"{% endif %}>Invites</a></li>
+        <li><a href="/admin/users"{% if nav_active == "users" %} aria-current="page"{% endif %}>Users</a></li>
+      </ul>
+      <ul>
+        <li>
+          <form method="post" action="/admin/logout" class="logout-form">
+            <button type="submit" class="outline secondary">Log out</button>
+          </form>
+        </li>
+      </ul>
+    </nav>
+  </header>
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+  <script src="/static/copy.js" defer></script>
+  <script src="/static/ui.js" defer></script>
+</body>
+</html>

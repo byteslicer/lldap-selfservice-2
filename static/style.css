@@ -1,100 +1,265 @@
+/* App overrides on top of Pico CSS v2 (see static/pico.min.css) */
+
+/* Pico sets an explicit height on inputs but not on buttons — align toolbars */
 :root {
-  --bg: #0f1419;
-  --card: #1a2332;
-  --text: #e7ecf3;
-  --muted: #8b9cb3;
-  --accent: #3d8bfd;
-  --error: #f87171;
-  --success: #4ade80;
-  --border: #2d3a4f;
+  --app-control-height: calc(
+    1rem * var(--pico-line-height) + var(--pico-form-element-spacing-vertical) * 2 +
+      var(--pico-border-width) * 2
+  );
 }
 
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  font-family: system-ui, -apple-system, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.5;
+body > main.container {
+  padding-block: 1.5rem 3rem;
 }
 
-a { color: var(--accent); }
-.muted { color: var(--muted); }
+.app-header {
+  padding-block: 0.5rem 0;
+  border-bottom: 1px solid var(--pico-muted-border-color);
+  margin-bottom: 0.5rem;
+}
 
-.topbar {
-  display: flex;
-  justify-content: space-between;
+.app-header nav {
   align-items: center;
-  padding: 1rem 1.5rem;
-  border-bottom: 1px solid var(--border);
-  background: var(--card);
-}
-.topbar nav { display: flex; gap: 1rem; align-items: center; }
-.topbar form.inline { display: inline; margin: 0; }
-.topbar button.link {
-  background: none;
-  border: none;
-  color: var(--accent);
-  cursor: pointer;
-  font: inherit;
-  padding: 0;
 }
 
-.content { max-width: 960px; margin: 0 auto; padding: 1.5rem; }
-.card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 1.5rem;
-  margin-bottom: 1rem;
+.logout-form {
+  margin: 0;
 }
-.card.narrow { max-width: 420px; margin: 3rem auto; }
 
-main.card { max-width: 400px; margin: 4rem auto; }
-
-h1 { margin-top: 0; font-size: 1.5rem; }
-h2 { font-size: 1.15rem; }
-
-label {
-  display: block;
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
+.logout-form button {
+  margin: 0;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.875rem;
 }
-input {
-  display: block;
+
+.public-main {
+  padding-block: 3rem 2rem;
+}
+
+.public-main > article {
+  max-width: 28rem;
+  margin-inline: auto;
+}
+
+.public-main > article.wide {
+  max-width: 36rem;
+}
+
+.page-header {
+  margin-bottom: var(--pico-spacing);
+}
+
+.page-header h1 {
+  margin-bottom: 0.35rem;
+}
+
+.page-header .muted {
+  margin: 0;
+}
+
+.muted {
+  color: var(--pico-muted-color);
+}
+
+.page-section + .page-section {
+  margin-top: calc(var(--pico-spacing) * 1.5);
+  padding-top: calc(var(--pico-spacing) * 1.5);
+  border-top: 1px solid var(--pico-muted-border-color);
+}
+
+.section-title {
+  font-size: 1.05rem;
+  margin: 0 0 var(--pico-spacing);
+}
+
+/* Label on row 1; input + button share row 2 so heights always match */
+.form-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto var(--app-control-height);
+  column-gap: var(--pico-spacing);
+  row-gap: calc(var(--pico-spacing) * 0.375);
+  align-items: center;
+  max-width: 40rem;
+}
+
+.form-toolbar__label {
+  grid-column: 1;
+  grid-row: 1;
+  margin: 0;
+}
+
+.form-toolbar input.form-toolbar__control,
+.form-toolbar button.form-toolbar__submit {
+  /* Beat Pico's `input:not([type=checkbox],…)` margin-bottom on form fields */
+  margin: 0;
+}
+
+.form-toolbar__control {
+  grid-column: 1;
+  grid-row: 2;
   width: 100%;
-  margin-top: 0.35rem;
-  padding: 0.5rem 0.65rem;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--bg);
-  color: var(--text);
+  height: var(--app-control-height);
+  min-height: var(--app-control-height);
+  max-height: var(--app-control-height);
+  box-sizing: border-box;
+  align-self: start;
 }
 
-button {
-  padding: 0.55rem 1rem;
-  border: none;
-  border-radius: 6px;
-  background: var(--accent);
-  color: #fff;
-  font-weight: 600;
-  cursor: pointer;
+.form-toolbar__submit {
+  grid-column: 2;
+  grid-row: 2;
+  width: auto;
+  height: var(--app-control-height);
+  min-height: var(--app-control-height);
+  max-height: var(--app-control-height);
+  padding-block: 0;
+  padding-inline: var(--pico-form-element-spacing-horizontal);
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  white-space: nowrap;
+  align-self: start;
 }
-button:hover { filter: brightness(1.08); }
-
-.row { display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap; }
-.row .grow { flex: 1; min-width: 200px; }
-
-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-th, td { text-align: left; padding: 0.5rem; border-bottom: 1px solid var(--border); }
 
 .flash {
-  padding: 0.75rem 1rem;
-  border-radius: 6px;
-  margin-bottom: 1rem;
+  padding: var(--pico-block-spacing-vertical) var(--pico-block-spacing-horizontal);
+  border-radius: var(--pico-border-radius);
+  border: 1px solid var(--pico-muted-border-color);
+  margin-bottom: var(--pico-spacing);
 }
-.flash.error { background: rgba(248, 113, 113, 0.15); color: var(--error); }
-.flash.success { background: rgba(74, 222, 128, 0.12); color: var(--success); }
 
-details summary { cursor: pointer; color: var(--accent); }
-details form { margin-top: 0.75rem; }
+.flash-text {
+  margin: 0 0 0.5rem;
+}
+
+.flash-url-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.flash-url-row input.flash-url-input,
+.flash-url-row button.copy-btn {
+  margin: 0;
+}
+
+.flash-url-input {
+  width: 100%;
+  height: var(--app-control-height);
+  min-height: var(--app-control-height);
+  max-height: var(--app-control-height);
+  box-sizing: border-box;
+  align-self: start;
+  font-family: var(--pico-font-family-monospace, monospace);
+  font-size: 0.85rem;
+}
+
+.flash-url-row .copy-btn {
+  width: auto;
+  height: var(--app-control-height);
+  min-height: var(--app-control-height);
+  max-height: var(--app-control-height);
+  padding-block: 0;
+  padding-inline: var(--pico-form-element-spacing-horizontal);
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  white-space: nowrap;
+  align-self: start;
+}
+
+.flash.error {
+  border-color: var(--pico-del-color);
+  background: color-mix(in srgb, var(--pico-del-color) 12%, transparent);
+  color: var(--pico-del-color);
+}
+
+.flash.error .flash-text {
+  margin: 0;
+}
+
+.flash.success {
+  border-color: var(--pico-ins-color);
+  background: color-mix(in srgb, var(--pico-ins-color) 10%, transparent);
+}
+
+.flash.success .flash-text {
+  color: var(--pico-color);
+}
+
+.table-scroll {
+  overflow-x: auto;
+  margin: 0;
+}
+
+.table-scroll table {
+  margin: 0;
+  min-width: 36rem;
+}
+
+.status {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.55rem;
+  border-radius: calc(var(--pico-border-radius) * 2);
+  border: 1px solid var(--pico-muted-border-color);
+  white-space: nowrap;
+}
+
+.status-active {
+  border-color: var(--pico-ins-color);
+  color: var(--pico-ins-color);
+}
+
+.status-used {
+  color: var(--pico-muted-color);
+}
+
+.status-expired {
+  border-color: var(--pico-del-color);
+  color: var(--pico-del-color);
+}
+
+.empty-row td {
+  text-align: center;
+  color: var(--pico-muted-color);
+  font-style: italic;
+  padding-block: 1.25rem;
+}
+
+dialog article {
+  margin: 0;
+  min-width: min(22rem, 90vw);
+}
+
+dialog header h2 {
+  margin-bottom: 0.25rem;
+  font-size: 1.15rem;
+}
+
+dialog .dialog-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: var(--pico-spacing);
+}
+
+dialog .dialog-actions button {
+  width: auto;
+  margin: 0;
+}
+
+.hint {
+  font-size: 0.85rem;
+  color: var(--pico-muted-color);
+  margin-top: -0.5rem;
+  margin-bottom: var(--pico-spacing);
+}

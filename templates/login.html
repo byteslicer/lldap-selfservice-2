@@ -1,27 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Admin login — LLDAP Self-Service</title>
-  <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
-  <main class="card">
-    <h1>Community admin login</h1>
+{% extends "layout_public.html" %}
+{% block title %}Admin login — LLDAP Self-Service{% endblock %}
+{% block content %}
+<article>
+  <header class="page-header">
+    <h1>Admin login</h1>
     <p class="muted">Sign in with your LDAP username and password.</p>
-    {% if let Some(err) = error %}
-    <p class="flash error">{{ err }}</p>
-    {% endif %}
-    <form method="post" action="/admin/login">
-      <label>Username
-        <input name="username" autocomplete="username" required autofocus>
-      </label>
-      <label>Password
-        <input name="password" type="password" autocomplete="current-password" required>
-      </label>
-      <button type="submit">Sign in</button>
-    </form>
-  </main>
-</body>
-</html>
+  </header>
+  {% if let Some(err) = error %}
+  <aside class="flash error" role="alert">
+    <p class="flash-text">{{ err }}</p>
+  </aside>
+  {% endif %}
+  <form method="post" action="/admin/login">
+    <label>
+      Username
+      <input name="username" autocomplete="username" required autofocus>
+    </label>
+    <label>
+      Password
+      <input name="password" type="password" autocomplete="current-password" required>
+    </label>
+    <button type="submit">Sign in</button>
+  </form>
+</article>
+{% endblock %}

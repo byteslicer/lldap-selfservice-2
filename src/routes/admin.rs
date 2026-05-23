@@ -13,7 +13,7 @@ use crate::auth::{
 use crate::db;
 use crate::error::{AppError, AppResult};
 use crate::state::AppState;
-use crate::templates::{AdminDashboardTemplate, AdminLoginTemplate, AdminUsersTemplate};
+use crate::templates::{AdminDashboardTemplate, AdminLoginTemplate, AdminUsersTemplate, FlashMessage};
 
 pub fn router() -> Router<AppState> {
     Router::new()
@@ -32,6 +32,7 @@ pub struct LoginForm {
 #[derive(Deserialize)]
 pub struct UsersQuery {
     q: Option<String>,
+    reset: Option<String>,
 }
 
 async fn login_form(State(state): State<AppState>) -> AdminLoginTemplate {
@@ -106,6 +107,7 @@ async fn dashboard(
     let invites = db::list_invites(&state.pool).await?;
     Ok(AdminDashboardTemplate {
         uid: session.uid.clone(),
+        nav_active: "invites",
         can_reset_pwd: session.can_reset_pwd,
         csrf_token: session.csrf_token.clone(),
         invites,
@@ -132,13 +134,25 @@ async fn users_page(
         .await
         .map_err(AppError::from)?;
 
+    let search = query.q.unwrap_or_default();
+    let flash = query.reset.as_deref().filter(|s| *s == "ok").map(|_| FlashMessage {
+        kind: "success".into(),
+        text: if search.is_empty() {
+            "Password updated successfully.".into()
+        } else {
+            format!("Password updated for “{search}”.")
+        },
+        invite_url: None,
+    });
+
     Ok(AdminUsersTemplate {
         uid: session.uid,
+        nav_active: "users",
         can_reset_pwd: session.can_reset_pwd,
         csrf_token: session.csrf_token,
         users,
-        search: query.q.unwrap_or_default(),
-        flash: None,
+        search,
+        flash,
         public_base_url: state.public_base_url().to_string(),
     }
     .into_response())

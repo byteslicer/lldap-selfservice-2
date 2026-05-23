@@ -89,12 +89,14 @@ async fn create_invite(
     let invites = db::list_invites(&state.pool).await?;
     Ok(AdminDashboardTemplate {
         uid: session.uid,
+        nav_active: "invites",
         can_reset_pwd: session.can_reset_pwd,
         csrf_token: session.csrf_token,
         invites,
         flash: Some(FlashMessage {
             kind: "success".into(),
-            text: format!("Invite created (copy now — shown once): {invite_url}"),
+            text: "Invite link created. Copy it now — it will not be shown again.".into(),
+            invite_url: Some(invite_url),
         }),
         public_base_url: state.public_base_url().to_string(),
     }
