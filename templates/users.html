@@ -11,11 +11,9 @@
 
   <section class="page-section">
     <form method="get" action="/admin/users" class="form-toolbar">
-      <div class="form-field">
-        <label for="user-search">Search</label>
-        <input id="user-search" name="q" type="search" value="{{ search }}" placeholder="Username, email, or display name">
-      </div>
-      <button type="submit">Search</button>
+      <label for="user-search" class="form-toolbar__label">Search</label>
+      <input id="user-search" class="form-toolbar__control" name="q" type="search" value="{{ search }}" placeholder="Username, email, or display name">
+      <button type="submit" class="form-toolbar__submit">Search</button>
     </form>
     {% if search.is_empty() %}
     <p class="hint">Leave empty and search to list users (may be slow on large directories).</p>

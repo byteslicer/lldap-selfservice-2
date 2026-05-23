@@ -13,11 +13,9 @@
     <h2 class="section-title">New invite</h2>
     <form method="post" action="/api/invites" class="form-toolbar">
       <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-      <div class="form-field">
-        <label for="invite-label">Label <span class="muted">(optional)</span></label>
-        <input id="invite-label" name="label" placeholder="e.g. Matrix onboarding">
-      </div>
-      <button type="submit">Create invite</button>
+      <label for="invite-label" class="form-toolbar__label">Label <span class="muted">(optional)</span></label>
+      <input id="invite-label" class="form-toolbar__control" name="label" placeholder="e.g. Matrix onboarding">
+      <button type="submit" class="form-toolbar__submit">Create invite</button>
     </form>
   </section>
 
