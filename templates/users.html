@@ -11,10 +11,10 @@
 
   <section class="page-section">
     <form method="get" action="/admin/users" class="form-toolbar">
-      <label>
-        Search
-        <input name="q" type="search" value="{{ search }}" placeholder="Username, email, or display name">
-      </label>
+      <div class="form-field">
+        <label for="user-search">Search</label>
+        <input id="user-search" name="q" type="search" value="{{ search }}" placeholder="Username, email, or display name">
+      </div>
       <button type="submit">Search</button>
     </form>
     {% if search.is_empty() %}
