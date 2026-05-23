@@ -12,6 +12,7 @@ mod filters {
 pub struct FlashMessage {
     pub kind: String,
     pub text: String,
+    pub invite_url: Option<String>,
 }
 
 #[derive(Template)]

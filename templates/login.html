@@ -2,12 +2,14 @@
 {% block title %}Admin login — LLDAP Self-Service{% endblock %}
 {% block content %}
 <article>
-  <header>
-    <h1>Community admin login</h1>
+  <header class="page-header">
+    <h1>Admin login</h1>
     <p class="muted">Sign in with your LDAP username and password.</p>
   </header>
   {% if let Some(err) = error %}
-  <p class="flash error" role="alert">{{ err }}</p>
+  <aside class="flash error" role="alert">
+    <p class="flash-text">{{ err }}</p>
+  </aside>
   {% endif %}
   <form method="post" action="/admin/login">
     <label>

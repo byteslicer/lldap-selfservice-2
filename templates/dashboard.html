@@ -1,54 +1,54 @@
 {% extends "layout_admin.html" %}
-{% block title %}Dashboard — LLDAP Self-Service{% endblock %}
+{% block title %}Invites — LLDAP Self-Service{% endblock %}
 {% block content %}
-{% if let Some(f) = flash %}
-<p class="flash {{ f.kind }}" role="status">{{ f.text|safe }}</p>
-{% endif %}
-
 <article>
-  <header>
-    <h1>Invite links</h1>
-    <p class="muted">One-time links for new members. The full URL is shown only once when created.</p>
+  <header class="page-header">
+    <h1>Invites</h1>
+    <p class="muted">Create one-time signup links for new members.</p>
   </header>
-  <form method="post" action="/api/invites" class="grid invite-create-form">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-    <label>
-      Label (optional)
-      <input name="label" placeholder="e.g. Matrix onboarding">
-    </label>
-    <button type="submit">Create invite</button>
-  </form>
-</article>
 
-<article>
-  <header>
-    <h2>Recent invites</h2>
-  </header>
-  <figure>
-    <table role="grid">
-      <thead>
-        <tr>
-          <th scope="col">Created</th>
-          <th scope="col">By</th>
-          <th scope="col">Status</th>
-          <th scope="col">User</th>
-          <th scope="col">Label</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for inv in invites %}
-        <tr>
-          <td>{{ inv.created_at|format_datetime }}</td>
-          <td>{{ inv.created_by_uid }}</td>
-          <td><span class="status {{ inv|invite_status_class }}">{{ inv|invite_status_label }}</span></td>
-          <td>{% if let Some(u) = inv.lldap_user_id %}{{ u }}{% else %}—{% endif %}</td>
-          <td>{% if let Some(l) = inv.label %}{{ l }}{% else %}—{% endif %}</td>
-        </tr>
-        {% else %}
-        <tr><td colspan="5" class="muted">No invites yet.</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </figure>
+  {% include "partials/flash.html" %}
+
+  <section class="page-section">
+    <h2 class="section-title">New invite</h2>
+    <form method="post" action="/api/invites" class="form-toolbar">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <label>
+        Label <span class="muted">(optional)</span>
+        <input name="label" placeholder="e.g. Matrix onboarding">
+      </label>
+      <button type="submit">Create invite</button>
+    </form>
+  </section>
+
+  <section class="page-section">
+    <h2 class="section-title">Recent invites</h2>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Created</th>
+            <th scope="col">By</th>
+            <th scope="col">Status</th>
+            <th scope="col">User</th>
+            <th scope="col">Label</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for inv in invites %}
+          <tr>
+            <td>{{ inv.created_at|format_datetime }}</td>
+            <td>{{ inv.created_by_uid }}</td>
+            <td><span class="status {{ inv|invite_status_class }}">{{ inv|invite_status_label }}</span></td>
+            <td>{% if let Some(u) = inv.lldap_user_id %}{{ u }}{% else %}<span class="muted">—</span>{% endif %}</td>
+            <td>{% if let Some(l) = inv.label %}{{ l }}{% else %}<span class="muted">—</span>{% endif %}</td>
+          </tr>
+          {% else %}
+          <tr class="empty-row"><td colspan="5">No invites yet. Create one above.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
 </article>
 {% endblock %}

@@ -19,7 +19,7 @@
       <ul>
         <li>
           <form method="post" action="/admin/logout" class="logout-form">
-            <button type="submit" class="outline secondary">Logout ({{ uid }})</button>
+            <button type="submit" class="outline secondary">Log out</button>
           </form>
         </li>
       </ul>
@@ -28,5 +28,7 @@
   <main class="container">
     {% block content %}{% endblock %}
   </main>
+  <script src="/static/copy.js" defer></script>
+  <script src="/static/ui.js" defer></script>
 </body>
 </html>

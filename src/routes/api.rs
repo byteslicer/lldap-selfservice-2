@@ -95,9 +95,8 @@ async fn create_invite(
         invites,
         flash: Some(FlashMessage {
             kind: "success".into(),
-            text: format!(
-                "Invite created (copy now — shown once): <code>{invite_url}</code>"
-            ),
+            text: "Invite link created. Copy it now — it will not be shown again.".into(),
+            invite_url: Some(invite_url),
         }),
         public_base_url: state.public_base_url().to_string(),
     }

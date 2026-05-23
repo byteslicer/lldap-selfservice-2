@@ -2,18 +2,21 @@
 {% block title %}Join — Community{% endblock %}
 {% block content %}
 <article>
-  <header>
+  <header class="page-header">
     <h1>Create your account</h1>
+    <p class="muted">One-time registration — choose a username and password.</p>
   </header>
   {% if let Some(err) = error %}
-  <p class="flash error" role="alert">{{ err }}</p>
+  <aside class="flash error" role="alert">
+    <p class="flash-text">{{ err }}</p>
+  </aside>
   {% else %}
-  <p class="muted">Complete this one-time registration form.</p>
   <form method="post" action="/invite/{{ token }}">
     <label>
       Username
       <input name="uid" value="{{ uid }}" autocomplete="username" required pattern="[A-Za-z0-9._-]{1,32}">
     </label>
+    <p class="hint">Letters, numbers, dots, underscores, and hyphens (max 32 characters).</p>
     <label>
       Email
       <input name="email" type="email" value="{{ email }}" autocomplete="email" required>
