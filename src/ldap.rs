@@ -2,6 +2,7 @@ use crate::config::{Config, GroupsConfig, LdapConfig};
 use crate::error::{AppError, AppResult};
 use ldap3::{LdapConn, Scope};
 
+#[derive(Clone)]
 pub struct LdapAuth {
     config: LdapConfig,
     groups: GroupsConfig,
@@ -16,7 +17,16 @@ impl LdapAuth {
     }
 
     /// Bind with user credentials and return whether they may invite / reset passwords.
-    pub fn authenticate(&self, username: &str, password: &str) -> AppResult<(bool, bool)> {
+    pub async fn authenticate(&self, username: &str, password: &str) -> AppResult<(bool, bool)> {
+        let this = self.clone();
+        let username = username.to_string();
+        let password = password.to_string();
+        tokio::task::spawn_blocking(move || this.authenticate_blocking(&username, &password))
+            .await
+            .map_err(|e| AppError::msg(format!("LDAP task failed: {e}")))?
+    }
+
+    fn authenticate_blocking(&self, username: &str, password: &str) -> AppResult<(bool, bool)> {
         let bind_dn = format!("uid={},{}", username, self.config.people_dn);
         let mut ldap = LdapConn::new(&self.config.uri)
             .map_err(|e| AppError::msg(format!("LDAP connection failed: {e}")))?;

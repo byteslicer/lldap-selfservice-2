@@ -18,6 +18,7 @@ pub struct LldapClient {
     service_username: String,
     service_password: String,
     default_group_dns: Vec<String>,
+    http_client: reqwest::Client,
     token: Arc<RwLock<CachedToken>>,
     group_cache: Arc<RwLock<HashMap<String, i64>>>,
 }
@@ -78,25 +79,19 @@ struct CreateUserId {
     id: String,
 }
 
-#[derive(Deserialize)]
-struct UserDetailData {
-    user: UserDetail,
-}
-
-#[derive(Deserialize)]
-struct UserDetail {
-    id: String,
-    groups: Vec<GroupRow>,
-}
-
 impl LldapClient {
     pub fn new(config: &Config, service_password: String) -> Self {
+        let http_client = reqwest::Client::builder()
+            .timeout(Duration::from_secs(30))
+            .build()
+            .expect("reqwest client");
         Self {
             http_url: config.lldap.http_url.trim_end_matches('/').to_string(),
             set_password_bin: config.lldap.set_password_bin.clone(),
             service_username: config.lldap.service_username.clone(),
             service_password,
             default_group_dns: config.groups.default_on_signup.clone(),
+            http_client,
             token: Arc::new(RwLock::new(CachedToken {
                 jwt: String::new(),
                 expires_at: Instant::now(),
@@ -123,7 +118,7 @@ impl LldapClient {
                 return Ok(guard.jwt.clone());
             }
         }
-        let client = reqwest::Client::new();
+        let client = &self.http_client;
         let url = format!("{}/auth/simple/login", self.http_url);
         let resp: LoginResponse = client
             .post(&url)
@@ -152,7 +147,7 @@ impl LldapClient {
         variables: serde_json::Value,
     ) -> Result<T> {
         let token = self.jwt().await?;
-        let client = reqwest::Client::new();
+        let client = &self.http_client;
         let url = format!("{}/api/graphql", self.http_url);
         let body = json!({ "query": query, "variables": variables });
         let resp: GraphQlResponse<T> = client
@@ -212,7 +207,7 @@ impl LldapClient {
         const QUERY: &str =
             r#"query($id: String!) { user(userId: $id) { id } }"#;
         let token = self.jwt().await?;
-        let client = reqwest::Client::new();
+        let client = &self.http_client;
         let url = format!("{}/api/graphql", self.http_url);
         let body = json!({
             "query": QUERY,
@@ -292,7 +287,7 @@ impl LldapClient {
     async fn add_user_to_group(&self, uid: &str, group_id: i64) -> Result<()> {
         const MUTATION: &str = r#"
             mutation($userId: String!, $groupId: Int!) {
-                addUserToGroup(userId: $userId, groupId: $groupId) { success }
+                addUserToGroup(userId: $userId, groupId: $groupId) { ok }
             }
         "#;
         #[derive(Deserialize)]
@@ -301,7 +296,7 @@ impl LldapClient {
         }
         #[derive(Deserialize)]
         struct Success {
-            success: bool,
+            ok: bool,
         }
         let _: R = self
             .graphql(
@@ -313,8 +308,22 @@ impl LldapClient {
     }
 
     pub async fn user_is_lldap_admin(&self, uid: &str) -> Result<bool> {
-        const QUERY: &str = r#"query($id: String!) { user(userId: $id) { groups { displayName } } }"#;
-        let data: UserDetailData = self.graphql(QUERY, json!({ "id": uid })).await?;
+        const QUERY: &str =
+            r#"query($id: String!) { user(userId: $id) { groups { displayName } } }"#;
+        #[derive(Deserialize)]
+        struct Data {
+            user: UserGroups,
+        }
+        #[derive(Deserialize)]
+        struct UserGroups {
+            groups: Vec<GroupName>,
+        }
+        #[derive(Deserialize)]
+        struct GroupName {
+            #[serde(rename = "displayName")]
+            display_name: String,
+        }
+        let data: Data = self.graphql(QUERY, json!({ "id": uid })).await?;
         Ok(data
             .user
             .groups
@@ -324,22 +333,26 @@ impl LldapClient {
 
     pub async fn set_password(&self, uid: &str, password: &str) -> Result<()> {
         let token = self.jwt().await?;
-        let output = Command::new(&self.set_password_bin)
-            .args([
-                "--base-url",
-                &self.http_url,
-                "--token",
-                &token,
-                "--username",
-                uid,
-                "--password",
-                password,
-            ])
-            .stdout(Stdio::piped())
-            .stderr(Stdio::piped())
-            .output()
-            .await
-            .with_context(|| format!("running {}", self.set_password_bin))?;
+        let output = tokio::time::timeout(
+            Duration::from_secs(60),
+            Command::new(&self.set_password_bin)
+                .args([
+                    "--base-url",
+                    &self.http_url,
+                    "--token",
+                    &token,
+                    "--username",
+                    uid,
+                    "--password",
+                    password,
+                ])
+                .stdout(Stdio::piped())
+                .stderr(Stdio::piped())
+                .output(),
+        )
+        .await
+        .context("lldap_set_password timed out after 60s")?
+        .with_context(|| format!("running {}", self.set_password_bin))?;
 
         if !output.status.success() {
             let stderr = String::from_utf8_lossy(&output.stderr);

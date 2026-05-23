@@ -49,11 +49,19 @@ The app will listen on `127.0.0.1:8080`. Dev config is at `/workspace/config.tom
 | Service account | `selfservice` | `devservicepassword` | App's service account for GraphQL API |
 | Test admin | `testadmin` | `testadminpass` | Member of `selfservice_admins` + `selfservice_password_reset` |
 
-### Known pre-existing code issues
+### Known issues (fixed on integration branch)
 
-1. **Login panics:** The `ldap3` crate's sync API (`LdapConn`) is called inside the tokio async runtime, causing a "Cannot start a runtime from within a runtime" panic on login attempts. This is a code bug, not an environment issue.
-2. **GraphQL schema mismatch:** The code uses `{ success }` in the `addUserToGroup` mutation response, but LLDAP v0.6.3 uses `{ ok }`. This causes 400 errors during user signup's group assignment step.
-3. **`lldap_set_password` flag mismatch:** The code passes `--url`, `--jwt-token`, `--user` but LLDAP v0.6.3 uses `--base-url`, `--token`, `--username`. A wrapper script at `/tmp/lldap_set_password_wrapper.sh` translates these flags.
+These were found during LLDAP v0.6.3 smoke testing and are fixed in `cursor/lldap-integration-test-a716`:
+
+1. ~~**Login panics**~~ — LDAP bind now runs in `spawn_blocking` to avoid tokio runtime panic.
+2. ~~**GraphQL schema mismatch**~~ — `addUserToGroup` response uses `{ ok }` (not `{ success }`).
+3. ~~**Password reset 500**~~ — `user_is_lldap_admin` GraphQL query used structs requiring fields not returned by LLDAP.
+
+Run the smoke test (all steps use `timeout`):
+
+```bash
+./scripts/dev-smoke-test.sh
+```
 
 ### Secret files
 
