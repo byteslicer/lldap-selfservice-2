@@ -106,6 +106,7 @@ async fn dashboard(
     let invites = db::list_invites(&state.pool).await?;
     Ok(AdminDashboardTemplate {
         uid: session.uid.clone(),
+        nav_active: "invites",
         can_reset_pwd: session.can_reset_pwd,
         csrf_token: session.csrf_token.clone(),
         invites,
@@ -134,6 +135,7 @@ async fn users_page(
 
     Ok(AdminUsersTemplate {
         uid: session.uid,
+        nav_active: "users",
         can_reset_pwd: session.can_reset_pwd,
         csrf_token: session.csrf_token,
         users,

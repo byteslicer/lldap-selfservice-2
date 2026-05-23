@@ -1,100 +1,93 @@
-:root {
-  --bg: #0f1419;
-  --card: #1a2332;
-  --text: #e7ecf3;
-  --muted: #8b9cb3;
-  --accent: #3d8bfd;
-  --error: #f87171;
-  --success: #4ade80;
-  --border: #2d3a4f;
+/* App overrides on top of Pico CSS v2 (see static/pico.min.css) */
+
+.app-header {
+  padding-block: 0.75rem 0;
 }
 
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  font-family: system-ui, -apple-system, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.5;
-}
-
-a { color: var(--accent); }
-.muted { color: var(--muted); }
-
-.topbar {
-  display: flex;
-  justify-content: space-between;
+.app-header nav {
   align-items: center;
-  padding: 1rem 1.5rem;
-  border-bottom: 1px solid var(--border);
-  background: var(--card);
-}
-.topbar nav { display: flex; gap: 1rem; align-items: center; }
-.topbar form.inline { display: inline; margin: 0; }
-.topbar button.link {
-  background: none;
-  border: none;
-  color: var(--accent);
-  cursor: pointer;
-  font: inherit;
-  padding: 0;
 }
 
-.content { max-width: 960px; margin: 0 auto; padding: 1.5rem; }
-.card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 1.5rem;
-  margin-bottom: 1rem;
-}
-.card.narrow { max-width: 420px; margin: 3rem auto; }
-
-main.card { max-width: 400px; margin: 4rem auto; }
-
-h1 { margin-top: 0; font-size: 1.5rem; }
-h2 { font-size: 1.15rem; }
-
-label {
-  display: block;
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
-}
-input {
-  display: block;
-  width: 100%;
-  margin-top: 0.35rem;
-  padding: 0.5rem 0.65rem;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--bg);
-  color: var(--text);
+.logout-form {
+  margin: 0;
 }
 
-button {
-  padding: 0.55rem 1rem;
-  border: none;
-  border-radius: 6px;
-  background: var(--accent);
-  color: #fff;
-  font-weight: 600;
-  cursor: pointer;
+.public-main {
+  padding-block: 3rem 2rem;
 }
-button:hover { filter: brightness(1.08); }
 
-.row { display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap; }
-.row .grow { flex: 1; min-width: 200px; }
+.public-main > article {
+  max-width: 28rem;
+  margin-inline: auto;
+}
 
-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-th, td { text-align: left; padding: 0.5rem; border-bottom: 1px solid var(--border); }
+.public-main > article.wide {
+  max-width: 36rem;
+}
+
+.muted {
+  color: var(--pico-muted-color);
+}
 
 .flash {
-  padding: 0.75rem 1rem;
-  border-radius: 6px;
-  margin-bottom: 1rem;
+  padding: var(--pico-block-spacing-vertical) var(--pico-block-spacing-horizontal);
+  border-radius: var(--pico-border-radius);
+  border: 1px solid var(--pico-muted-border-color);
+  margin-bottom: var(--pico-spacing);
 }
-.flash.error { background: rgba(248, 113, 113, 0.15); color: var(--error); }
-.flash.success { background: rgba(74, 222, 128, 0.12); color: var(--success); }
 
-details summary { cursor: pointer; color: var(--accent); }
-details form { margin-top: 0.75rem; }
+.flash.error {
+  border-color: var(--pico-del-color);
+  background: color-mix(in srgb, var(--pico-del-color) 12%, transparent);
+  color: var(--pico-del-color);
+}
+
+.flash.success {
+  border-color: var(--pico-ins-color);
+  background: color-mix(in srgb, var(--pico-ins-color) 12%, transparent);
+  color: var(--pico-ins-color);
+}
+
+.flash.success code {
+  word-break: break-all;
+}
+
+.invite-create-form {
+  align-items: flex-end;
+}
+
+.invite-create-form button {
+  margin-bottom: calc(var(--pico-spacing) * 0.25);
+}
+
+.status {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--pico-border-radius);
+  border: 1px solid var(--pico-muted-border-color);
+}
+
+.status-active {
+  border-color: var(--pico-ins-color);
+  color: var(--pico-ins-color);
+}
+
+.status-used {
+  color: var(--pico-muted-color);
+}
+
+.status-expired {
+  border-color: var(--pico-del-color);
+  color: var(--pico-del-color);
+}
+
+table tbody td.muted {
+  text-align: center;
+}
+
+details form {
+  margin-top: var(--pico-spacing);
+  max-width: 20rem;
+}

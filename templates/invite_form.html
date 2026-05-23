@@ -1,34 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Join — Community</title>
-  <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
-  <main class="card narrow">
+{% extends "layout_public.html" %}
+{% block title %}Join — Community{% endblock %}
+{% block content %}
+<article>
+  <header>
     <h1>Create your account</h1>
-    {% if let Some(err) = error %}
-    <p class="flash error">{{ err }}</p>
-    {% else %}
-    <p class="muted">Complete this one-time registration form.</p>
-    <form method="post" action="/invite/{{ token }}">
-      <label>Username
-        <input name="uid" value="{{ uid }}" autocomplete="username" required pattern="[A-Za-z0-9._-]{1,32}">
-      </label>
-      <label>Email
-        <input name="email" type="email" value="{{ email }}" autocomplete="email" required>
-      </label>
-      <label>Password
-        <input name="password" type="password" autocomplete="new-password" required minlength="8">
-      </label>
-      <label>Confirm password
-        <input name="password_confirm" type="password" autocomplete="new-password" required minlength="8">
-      </label>
-      <button type="submit">Create account</button>
-    </form>
-    {% endif %}
-  </main>
-</body>
-</html>
+  </header>
+  {% if let Some(err) = error %}
+  <p class="flash error" role="alert">{{ err }}</p>
+  {% else %}
+  <p class="muted">Complete this one-time registration form.</p>
+  <form method="post" action="/invite/{{ token }}">
+    <label>
+      Username
+      <input name="uid" value="{{ uid }}" autocomplete="username" required pattern="[A-Za-z0-9._-]{1,32}">
+    </label>
+    <label>
+      Email
+      <input name="email" type="email" value="{{ email }}" autocomplete="email" required>
+    </label>
+    <label>
+      Password
+      <input name="password" type="password" autocomplete="new-password" required minlength="8">
+    </label>
+    <label>
+      Confirm password
+      <input name="password_confirm" type="password" autocomplete="new-password" required minlength="8">
+    </label>
+    <button type="submit">Create account</button>
+  </form>
+  {% endif %}
+</article>
+{% endblock %}
