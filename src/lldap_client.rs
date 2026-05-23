@@ -326,11 +326,11 @@ impl LldapClient {
         let token = self.jwt().await?;
         let output = Command::new(&self.set_password_bin)
             .args([
-                "--url",
+                "--base-url",
                 &self.http_url,
-                "--jwt-token",
+                "--token",
                 &token,
-                "--user",
+                "--username",
                 uid,
                 "--password",
                 password,
